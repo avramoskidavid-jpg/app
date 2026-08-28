@@ -1,0 +1,6 @@
+@EnergyManagement.Api_HostAddress = http://localhost:5161
+
+GET {{EnergyManagement.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

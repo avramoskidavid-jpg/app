@@ -1,0 +1,33 @@
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5161:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Data Source=/data/energymanagement.db"
+      Jwt__Key: "${JWT_KEY:?Set JWT_KEY in a .env file at the project root - copy .env.example to .env and fill it in}"
+      Jwt__Issuer: "EnergyManagement.Api"
+      Jwt__Audience: "EnergyManagement.Client"
+      Jwt__ExpiryMinutes: "480"
+      Cors__AllowedOrigins__0: "http://localhost:5173"
+    volumes:
+      - sqlite-data:/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: "http://localhost:5161/api"
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  sqlite-data:
